@@ -107,7 +107,9 @@ class ViewController: UIViewController {
         let imageStamp = PDFImageAnnotation(bounds: imageBounds, image: signatureImage)
         imageStamp.userName = uuid
         page.addAnnotation(imageStamp)
-        let signView = PDFSignAnnotationView(frame: imageBounds, annotationIdentity: uuid)
+        
+        let signViewFrame = pdfContainerView.convert(imageBounds, from: page)
+        let signView = PDFSignAnnotationView(frame: signViewFrame, annotationIdentity: uuid)
         signView.delegate = self
         pdfContainerView.addSubview(signView)
         pdfContainerView.setNeedsDisplay()
@@ -128,50 +130,7 @@ class ViewController: UIViewController {
         pdfContainerView.displayDirection = .vertical
         
         pdfContainerView.autoScales = true
-
-        
-//        let panAnnotationGesture = UIPanGestureRecognizer(target: self, action: #selector(didPanAnnotation(sender:)))
-//        pdfContainerView.addGestureRecognizer(panAnnotationGesture)
     }
-    
-//    @objc func didPanAnnotation(sender: UIPanGestureRecognizer) {
-//        let touchLocation = sender.location(in: pdfContainerView)
-//
-//        guard let page = pdfContainerView.page(for: touchLocation, nearest: true)
-//            else {
-//                return
-//        }
-//        let locationOnPage = pdfContainerView.convert(touchLocation, to: page)
-//
-//        switch sender.state {
-//        case .began:
-//
-//            guard let annotation = page.annotation(at: locationOnPage) else {
-//                return
-//            }
-//
-//            if annotation.isKind(of: PDFImageAnnotation.self) {
-//                currentlySelectedAnnotation = annotation
-//            }
-//
-//        case .changed:
-//
-//            guard let annotation = currentlySelectedAnnotation else {
-//                return
-//            }
-//            let initialBounds = annotation.bounds
-//            // Set the center of the annotation to the spot of our finger
-//            annotation.bounds = CGRect(x: locationOnPage.x - (initialBounds.width / 2), y: locationOnPage.y - (initialBounds.height / 2), width: initialBounds.width, height: initialBounds.height)
-//
-//
-//            print("move to \(locationOnPage)")
-//        case .ended, .cancelled, .failed:
-//            currentlySelectedAnnotation = nil
-//        default:
-//            break
-//        }
-//    }
-    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showSignatureSegue" {
