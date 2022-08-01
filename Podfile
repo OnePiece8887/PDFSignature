@@ -7,6 +7,6 @@ target 'PDFSignature' do
   inhibit_all_warnings!
 
   # Pods for PDFSignature
-  pod 'TouchDraw'
+  pod 'TouchDraw', :git=> "https://github.com/dehli/TouchDraw.git"
 
 end

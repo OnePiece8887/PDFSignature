@@ -9,30 +9,76 @@
 import UIKit
 import PDFKit
 
-class ImageStampAnnotation: PDFAnnotation {
-    
-    var image: UIImage!
-    
-    // A custom init that sets the type to Stamp on default and assigns our Image variable
-    init(with image: UIImage!, forBounds bounds: CGRect, withProperties properties: [AnyHashable : Any]?) {
-        super.init(bounds: bounds, forType: PDFAnnotationSubtype.stamp, withProperties: properties)
-        
-        self.image = image
+class PDFImageAnnotation: PDFAnnotation {
+    let image: UIImage
+    let originalBounds: CGRect
+    /// 0 - 360
+    var angle: CGFloat = 0 {
+        didSet {
+            // reload annotation
+            shouldDisplay = true
+        }
     }
-    
-    required init?(coder aDecoder: NSCoder) {
+    /// scale annotation
+    var scale: CGFloat = 1 {
+        didSet {
+            // Scale on the original size
+            let width = originalBounds.width * scale
+            let height = originalBounds.height * scale
+            // move origin
+            let x = bounds.origin.x - (width - bounds.width)/2
+            let y = bounds.origin.y - (height - bounds.height)/2
+            print("new ---- \(CGRect(x: x, y: y, width: width, height: height))")
+            // Setting the bounds will automatically re-render
+            bounds = CGRect(x: x, y: y, width: width, height: height)
+        }
+    }
+    /// move center point
+    var center: CGPoint = .zero {
+        didSet {
+            let x = center.x - bounds.width/2.0
+            let y = center.y - bounds.height/2.0
+            // Setting the bounds will automatically re-render
+            bounds = CGRect(origin: CGPoint(x: x, y: y), size: bounds.size)
+        }
+    }
+
+    public init(bounds: CGRect, image: UIImage) {
+        self.image = image
+        originalBounds = bounds
+        super.init(bounds: bounds, forType: .ink, withProperties: nil)
+    }
+
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
+
     override func draw(with box: PDFDisplayBox, in context: CGContext) {
+        super.draw(with: box, in: context)
+        print("PDFImageAnnotation bounds - \(bounds)")
+        guard let page = page else {
+            return
+        }
+        UIGraphicsPushContext(context)
+        context.saveGState()
         
-        // Get the CGImage of our image
-        guard let cgImage = self.image.cgImage else { return }
-        
-        // Draw our CGImage in the context of our PDFAnnotation bounds
-        context.draw(cgImage, in: self.bounds)
-        
+        // rotate annotation
+        // The origin of the annotation is always at the initial position
+        let translateX = bounds.width/2 + bounds.origin.x
+        let translateY = bounds.height/2 + bounds.origin.y
+        // The page has its own rotation Angle
+        let newAngle = angle + CGFloat(page.rotation)
+        context.translateBy(x: translateX, y: translateY)
+        context.rotate(by: newAngle*(CGFloat.pi/180.0))
+        context.translateBy(x: -translateX, y: -translateY)
+
+        // draw image
+        if let cgImage = image.cgImage {
+            context.draw(cgImage, in: bounds)
+        }
+
+        context.restoreGState()
+        UIGraphicsPopContext()
     }
 }
 
@@ -55,66 +101,76 @@ class ViewController: UIViewController {
         super.viewDidAppear(animated)
         
         guard let signatureImage = signatureImage, let page = pdfContainerView.currentPage else { return }
-        let pageBounds = page.bounds(for: .cropBox)
-        let imageBounds = CGRect(x: pageBounds.midX, y: pageBounds.midY, width: 200, height: 100)
-        let imageStamp = ImageStampAnnotation(with: signatureImage, forBounds: imageBounds, withProperties: nil)
+        let imageBounds = CGRect(x: 0, y: 0, width: signatureImage.size.width, height: signatureImage.size.height)
+//        let imageStamp = ImageStampAnnotation(with: signatureImage, forBounds: imageBounds, withProperties: nil)
+        let uuid = UUID().uuidString
+        let imageStamp = PDFImageAnnotation(bounds: imageBounds, image: signatureImage)
+        imageStamp.userName = uuid
         page.addAnnotation(imageStamp)
+        let signView = PDFSignAnnotationView(frame: imageBounds, annotationIdentity: uuid)
+        signView.delegate = self
+        pdfContainerView.addSubview(signView)
+        pdfContainerView.setNeedsDisplay()
     }
 
     func setupPdfView() {
         // Download simple pdf document
-        if let documentURL = URL(string: "https://blogs.adobe.com/security/SampleSignedPDFDocument.pdf"),
-            let data = try? Data(contentsOf: documentURL),
-            let document = PDFDocument(data: data) {
-            
-            // Set document to the view, center it, and set background color
-            pdfContainerView.document = document
-            pdfContainerView.autoScales = true
-            pdfContainerView.backgroundColor = UIColor.lightGray
-            
-            let panAnnotationGesture = UIPanGestureRecognizer(target: self, action: #selector(didPanAnnotation(sender:)))
-            pdfContainerView.addGestureRecognizer(panAnnotationGesture)
-            
-        }
+        let path = Bundle.main.url(forResource: "Sample", withExtension: "pdf")
+        let document = PDFDocument(url: path!) 
+        
+        // Set document to the view, center it, and set background color
+        pdfContainerView.document = document
+        pdfContainerView.autoScales = true
+        pdfContainerView.isUserInteractionEnabled = true
+        pdfContainerView.backgroundColor = .gray
+        pdfContainerView.displayBox = .artBox
+        pdfContainerView.usePageViewController(true, withViewOptions: nil)
+        pdfContainerView.displayDirection = .vertical
+        
+        pdfContainerView.autoScales = true
+
+        
+//        let panAnnotationGesture = UIPanGestureRecognizer(target: self, action: #selector(didPanAnnotation(sender:)))
+//        pdfContainerView.addGestureRecognizer(panAnnotationGesture)
     }
     
-    @objc func didPanAnnotation(sender: UIPanGestureRecognizer) {
-        let touchLocation = sender.location(in: pdfContainerView)
-        
-        guard let page = pdfContainerView.page(for: touchLocation, nearest: true)
-            else {
-                return
-        }
-        let locationOnPage = pdfContainerView.convert(touchLocation, to: page)
-        
-        switch sender.state {
-        case .began:
-            
-            guard let annotation = page.annotation(at: locationOnPage) else {
-                return
-            }
-            
-            if annotation.isKind(of: ImageStampAnnotation.self) {
-                currentlySelectedAnnotation = annotation
-            }
-            
-        case .changed:
-            
-            guard let annotation = currentlySelectedAnnotation else {
-                return
-            }
-            let initialBounds = annotation.bounds
-            // Set the center of the annotation to the spot of our finger
-            annotation.bounds = CGRect(x: locationOnPage.x - (initialBounds.width / 2), y: locationOnPage.y - (initialBounds.height / 2), width: initialBounds.width, height: initialBounds.height)
-            
-            
-            print("move to \(locationOnPage)")
-        case .ended, .cancelled, .failed:
-            currentlySelectedAnnotation = nil
-        default:
-            break
-        }
-    }
+//    @objc func didPanAnnotation(sender: UIPanGestureRecognizer) {
+//        let touchLocation = sender.location(in: pdfContainerView)
+//
+//        guard let page = pdfContainerView.page(for: touchLocation, nearest: true)
+//            else {
+//                return
+//        }
+//        let locationOnPage = pdfContainerView.convert(touchLocation, to: page)
+//
+//        switch sender.state {
+//        case .began:
+//
+//            guard let annotation = page.annotation(at: locationOnPage) else {
+//                return
+//            }
+//
+//            if annotation.isKind(of: PDFImageAnnotation.self) {
+//                currentlySelectedAnnotation = annotation
+//            }
+//
+//        case .changed:
+//
+//            guard let annotation = currentlySelectedAnnotation else {
+//                return
+//            }
+//            let initialBounds = annotation.bounds
+//            // Set the center of the annotation to the spot of our finger
+//            annotation.bounds = CGRect(x: locationOnPage.x - (initialBounds.width / 2), y: locationOnPage.y - (initialBounds.height / 2), width: initialBounds.width, height: initialBounds.height)
+//
+//
+//            print("move to \(locationOnPage)")
+//        case .ended, .cancelled, .failed:
+//            currentlySelectedAnnotation = nil
+//        default:
+//            break
+//        }
+//    }
     
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -126,4 +182,40 @@ class ViewController: UIViewController {
     }
     
 }
-
+ 
+extension ViewController: PDFSignAnnotationViewDelegate {
+    func signAnnotationView(_ view: PDFSignAnnotationView, didMove point: CGPoint) {
+        guard let page = pdfContainerView.currentPage,
+              let imageAnnotation = page.annotations.filter({$0.userName == view.identity}).first as? PDFImageAnnotation else {
+            return
+        }
+        let locationOnPage = self.pdfContainerView.convert(point, to: page)
+        imageAnnotation.center = locationOnPage
+    }
+    
+    func signAnnotationView(_ view: PDFSignAnnotationView, didScale scale: CGFloat) {
+        guard let page = pdfContainerView.currentPage,
+              let imageAnnotation = page.annotations.filter({$0.userName == view.identity}).first as? PDFImageAnnotation else {
+            return
+        }
+        imageAnnotation.scale = scale
+    }
+    
+    func signAnnotationView(_ view: PDFSignAnnotationView, didRotate angle: CGFloat) {
+        guard let page = pdfContainerView.currentPage,
+              let imageAnnotation = page.annotations.filter({$0.userName == view.identity}).first as? PDFImageAnnotation else {
+            return
+        }
+        print("didRotate - \(angle)")
+        imageAnnotation.angle = -angle
+    }
+    func signAnnotationView(_ view: PDFSignAnnotationView, close identity: String) {
+        guard let page = pdfContainerView.currentPage else {
+            return
+        }
+        guard let annotation = page.annotations.filter({$0.userName == identity}).first else {
+            return
+        }
+        page.removeAnnotation(annotation)
+    }
+}

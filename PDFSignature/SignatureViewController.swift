@@ -21,6 +21,7 @@ class SignatureViewController: UIViewController {
         
         touchDrawView.delegate = self
         touchDrawView.setWidth(3.0)
+        touchDrawView.setColor(.red)
         
         self.navigationController?.delegate = self
     }

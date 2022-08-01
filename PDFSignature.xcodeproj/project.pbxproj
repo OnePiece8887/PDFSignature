@@ -14,6 +14,8 @@
 		EA97DA5B2056EFF6001CD7BA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EA97DA592056EFF6001CD7BA /* Main.storyboard */; };
 		EA97DA5D2056EFF6001CD7BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA97DA5C2056EFF6001CD7BA /* Assets.xcassets */; };
 		EA97DA602056EFF6001CD7BA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EA97DA5E2056EFF6001CD7BA /* LaunchScreen.storyboard */; };
+		EB3958D02897812D00004EDC /* PDFSignAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB3958CF2897812C00004EDC /* PDFSignAnnotationView.swift */; };
+		EB40884F287827A6006D97D1 /* Sample.pdf in Resources */ = {isa = PBXBuildFile; fileRef = EB40884E287827A6006D97D1 /* Sample.pdf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +30,8 @@
 		EA97DA5C2056EFF6001CD7BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EA97DA5F2056EFF6001CD7BA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		EA97DA612056EFF6001CD7BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EB3958CF2897812C00004EDC /* PDFSignAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFSignAnnotationView.swift; sourceTree = "<group>"; };
+		EB40884E287827A6006D97D1 /* Sample.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Sample.pdf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,9 +84,11 @@
 		EA97DA542056EFF6001CD7BA /* PDFSignature */ = {
 			isa = PBXGroup;
 			children = (
+				EB40884E287827A6006D97D1 /* Sample.pdf */,
 				EA97DA552056EFF6001CD7BA /* AppDelegate.swift */,
 				EA587B1F2057140900869017 /* SignatureViewController.swift */,
 				EA97DA572056EFF6001CD7BA /* ViewController.swift */,
+				EB3958CF2897812C00004EDC /* PDFSignAnnotationView.swift */,
 				EA97DA592056EFF6001CD7BA /* Main.storyboard */,
 				EA97DA5C2056EFF6001CD7BA /* Assets.xcassets */,
 				EA97DA5E2056EFF6001CD7BA /* LaunchScreen.storyboard */,
@@ -103,7 +109,6 @@
 				EA97DA4F2056EFF6001CD7BA /* Frameworks */,
 				EA97DA502056EFF6001CD7BA /* Resources */,
 				568135264103443B2047002E /* [CP] Embed Pods Frameworks */,
-				A2EA67655687CCB3E06BE22A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -153,6 +158,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB40884F287827A6006D97D1 /* Sample.pdf in Resources */,
 				EA97DA602056EFF6001CD7BA /* LaunchScreen.storyboard in Resources */,
 				EA97DA5D2056EFF6001CD7BA /* Assets.xcassets in Resources */,
 				EA97DA5B2056EFF6001CD7BA /* Main.storyboard in Resources */,
@@ -186,7 +192,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-PDFSignature/Pods-PDFSignature-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-PDFSignature/Pods-PDFSignature-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/TouchDraw/TouchDraw.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -195,22 +201,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PDFSignature/Pods-PDFSignature-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A2EA67655687CCB3E06BE22A /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PDFSignature/Pods-PDFSignature-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PDFSignature/Pods-PDFSignature-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -222,6 +213,7 @@
 			files = (
 				EA587B202057140900869017 /* SignatureViewController.swift in Sources */,
 				EA97DA582056EFF6001CD7BA /* ViewController.swift in Sources */,
+				EB3958D02897812D00004EDC /* PDFSignAnnotationView.swift in Sources */,
 				EA97DA562056EFF6001CD7BA /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -361,7 +353,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = LNQ86AM2R8;
+				DEVELOPMENT_TEAM = 7VC3687H26;
 				INFOPLIST_FILE = PDFSignature/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rajeejones.PDFSignature;
@@ -377,7 +369,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = LNQ86AM2R8;
+				DEVELOPMENT_TEAM = 7VC3687H26;
 				INFOPLIST_FILE = PDFSignature/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rajeejones.PDFSignature;

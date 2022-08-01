@@ -5,6 +5,9 @@
 //  Created by Christian Paul Dehli
 //
 
+import Foundation
+import UIKit
+
 /// The protocol which the container of TouchDrawView can conform to
 @objc public protocol TouchDrawViewDelegate {
     /// triggered when undo is enabled (only if it was previously disabled)
@@ -32,15 +35,21 @@ open class TouchDrawView: UIView {
     /// Should be set in whichever class is using the TouchDrawView
     open weak var delegate: TouchDrawViewDelegate?
 
+    /// Drawn underneath the strokes
+    open var image: UIImage? {
+        didSet(oldImage) { redrawStack() }
+    }
+
     /// Used to register undo and redo actions
-    fileprivate var touchDrawUndoManager: UndoManager!
+    fileprivate var touchDrawUndoManager = UndoManager()
 
     /// Used to keep track of all the strokes
-    internal var stack: [Stroke]!
+    internal var stack: [Stroke] = []
 
     /// Used to keep track of the current StrokeSettings
-    fileprivate var settings: StrokeSettings!
+    fileprivate let settings = StrokeSettings()
 
+    /// This is used to render a user's strokes
     fileprivate let imageView = UIImageView()
 
     /// Initializes a TouchDrawView instance
@@ -57,17 +66,7 @@ open class TouchDrawView: UIView {
 
     /// Adds the subviews and initializes stack
     private func initialize(_ frame: CGRect) {
-        stack = []
-        settings = StrokeSettings()
-
         addSubview(imageView)
-
-        touchDrawUndoManager = undoManager
-        if touchDrawUndoManager == nil {
-            touchDrawUndoManager = UndoManager()
-        }
-
-        // Initially sets the frames of the UIImageView
         draw(frame)
     }
 
@@ -106,10 +105,11 @@ open class TouchDrawView: UIView {
     /// Exports the current drawing
     open func exportDrawing() -> UIImage {
         UIGraphicsBeginImageContextWithOptions(imageView.bounds.size, false, UIScreen.main.scale)
-        imageView.image?.draw(in: imageView.frame)
-        let image = UIGraphicsGetImageFromCurrentImageContext()
+        imageView.image?.draw(in: imageView.bounds)
+
+        let imageFromContext = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        return image!
+        return imageFromContext!
     }
 
     /// Clears the drawing
@@ -213,6 +213,11 @@ open class TouchDrawView: UIView {
         redrawStack()
         touchDrawUndoManager.registerUndo(withTarget: self, selector: #selector(clearDrawing), object: nil)
     }
+
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        redrawStack()
+    }
 }
 
 // MARK: - Touch Actions
@@ -269,7 +274,7 @@ fileprivate extension TouchDrawView {
 
     /// Begins the image context
     func beginImageContext() {
-        UIGraphicsBeginImageContextWithOptions(frame.size, false, UIScreen.main.scale)
+        UIGraphicsBeginImageContextWithOptions(imageView.bounds.size, false, UIScreen.main.scale)
     }
 
     /// Ends image context and sets UIImage to what was on the context
@@ -280,12 +285,13 @@ fileprivate extension TouchDrawView {
 
     /// Draws the current image for context
     func drawCurrentImage() {
-        imageView.image?.draw(in: imageView.frame)
+        imageView.image?.draw(in: imageView.bounds)
     }
 
     /// Clears view, then draws stack
     func redrawStack() {
         beginImageContext()
+        image?.draw(in: imageView.bounds)
         for stroke in stack {
             drawStroke(stroke)
         }
