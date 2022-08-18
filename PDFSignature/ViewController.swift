@@ -61,7 +61,9 @@ class PDFImageAnnotation: PDFAnnotation {
         }
         UIGraphicsPushContext(context)
         context.saveGState()
-        
+        // move page of the origin, Sometimes the origin of the page is not zero
+        let pageBounds = page.bounds(for: box)
+        context.translateBy(x: -pageBounds.origin.x, y: -pageBounds.origin.y)
         // rotate annotation
         // The origin of the annotation is always at the initial position
         let translateX = bounds.width/2 + bounds.origin.x
