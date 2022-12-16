@@ -16,6 +16,7 @@
 		EA97DA602056EFF6001CD7BA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EA97DA5E2056EFF6001CD7BA /* LaunchScreen.storyboard */; };
 		EB3958D02897812D00004EDC /* PDFSignAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB3958CF2897812C00004EDC /* PDFSignAnnotationView.swift */; };
 		EB40884F287827A6006D97D1 /* Sample.pdf in Resources */ = {isa = PBXBuildFile; fileRef = EB40884E287827A6006D97D1 /* Sample.pdf */; };
+		EBD37B39294C2A5D0090AAA7 /* SignPDFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD37B38294C2A5D0090AAA7 /* SignPDFView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		EA97DA612056EFF6001CD7BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EB3958CF2897812C00004EDC /* PDFSignAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFSignAnnotationView.swift; sourceTree = "<group>"; };
 		EB40884E287827A6006D97D1 /* Sample.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Sample.pdf; sourceTree = "<group>"; };
+		EBD37B38294C2A5D0090AAA7 /* SignPDFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignPDFView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +95,7 @@
 				EA97DA5C2056EFF6001CD7BA /* Assets.xcassets */,
 				EA97DA5E2056EFF6001CD7BA /* LaunchScreen.storyboard */,
 				EA97DA612056EFF6001CD7BA /* Info.plist */,
+				EBD37B38294C2A5D0090AAA7 /* SignPDFView.swift */,
 			);
 			path = PDFSignature;
 			sourceTree = "<group>";
@@ -214,6 +217,7 @@
 				EA587B202057140900869017 /* SignatureViewController.swift in Sources */,
 				EA97DA582056EFF6001CD7BA /* ViewController.swift in Sources */,
 				EB3958D02897812D00004EDC /* PDFSignAnnotationView.swift in Sources */,
+				EBD37B39294C2A5D0090AAA7 /* SignPDFView.swift in Sources */,
 				EA97DA562056EFF6001CD7BA /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -87,7 +87,7 @@ class PDFImageAnnotation: PDFAnnotation {
 
 class ViewController: UIViewController {
 
-    @IBOutlet weak var pdfContainerView: PDFView!
+    @IBOutlet weak var pdfContainerView: SignPDFView!
     
     var currentlySelectedAnnotation: PDFAnnotation?
     var signatureImage: UIImage?
